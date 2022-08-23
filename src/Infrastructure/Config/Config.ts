@@ -34,8 +34,6 @@ export class Config {
         this.environment = Config.getEnvAsString("NODE_ENV", "development") as Environment;
         this.isProduction = this.environment === "production";
 
-        console.log(this.isProduction);
-
         this.root = process.cwd();
         this.tempDir = Config.getEnvAsString("TEMP_DIR", path.join(this.root, "temp"));
 
