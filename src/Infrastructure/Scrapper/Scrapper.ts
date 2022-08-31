@@ -58,21 +58,33 @@ export class Scrapper {
             return;
         }
 
-        const model = this.search(data);
-
+        const model = this.searchModel(data);
         if (!model) {
             this.logger.info("sorry, model not found :(");
 
             return;
         }
 
-        this.logger.info("!!!FOUND!!!");
+        this.logger.info("!!!FOUND MODEL!!!");
 
         const modelAsString = JSON.stringify(model, null, 2);
+        const messages = [
+            `Эй йоу, просыпайся блат, я нашел тут кое что!!! И это ${model.name}`,
+            `<code>${modelAsString.substring(0, 4000)}</code>`
+        ];
+        const atModification = this.searchModification(model);
+
+        if (atModification) {
+            this.logger.info("!!!FOUND MODIFICATION!!!");
+
+            messages.push('АААААААААААА!!!! НАШЕЛ АВТОМАААТ!!!');
+            messages.push(`<code>${atModification.substring(0, 4000)}</code>`);
+        }
 
         for (const chatId of this.notifySettings.chatIds) {
-            await this.notify(`Эй йоу, просыпайся блат, я нашел тут кое что!!! И это ${model.name}`, chatId);
-            await this.notify(`<code>${modelAsString.substring(0, 4000)}</code>`, chatId);
+            for (const message of messages) {
+                await this.notify(message, chatId);
+            }
         }
     }
 
@@ -88,7 +100,7 @@ export class Scrapper {
         return await response.json();
     }
 
-    private search(data: AnyObject[]): AnyObject | null {
+    private searchModel(data: AnyObject[]): AnyObject | null {
         for (const model of data) {
             let modelName = model.name;
 
@@ -98,11 +110,41 @@ export class Scrapper {
 
             modelName = modelName.trim().toLowerCase();
 
-            for (const title of this.settings.titles) {
+            for (const title of this.settings.modelTitles) {
                 if (modelName.includes(title.trim().toLowerCase())) {
                     return model;
                 }
             }
+        }
+
+        return null;
+    }
+
+    private searchModification(model): AnyObject | null {
+        if (!this.settings.modificationTitles.length) {
+            return null;
+        }
+
+        try {
+            if (!model.modifications) {
+                return null;
+            }
+
+            for (const modification of model.modifications) {
+                if (!modification.name) {
+                    continue;
+                }
+
+                const modificationName = modification.name.trim().toLowerCase();
+
+                for (const title of this.settings.modificationTitles) {
+                    if (modificationName.includes(title.trim().toLowerCase())) {
+                        return model;
+                    }
+                }
+            }
+        } catch (error) {
+            this.logger.error("Error on search modification", error);
         }
 
         return null;

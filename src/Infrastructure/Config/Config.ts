@@ -70,7 +70,8 @@ export class Config {
         this.scrapper = {
             url: Config.getEnvAsString("SCRAPPER_URL"),
             interval: Config.getEnvAsInteger("SCRAPPER_INTERVAL", 1000),
-            titles: Config.getEnvAsArray("SCRAPPER_TITLES", ["nexia"]),
+            modelTitles: Config.getEnvAsArray("SCRAPPER_MODEL_TITLES", ["nexia"]),
+            modificationTitles: Config.getEnvAsArray("SCRAPPER_MODIFICATION_TITLES", []),
         }
 
         this.notify = {

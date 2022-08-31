@@ -1,7 +1,8 @@
 export type ScrapperSettings = {
     url: string;
     interval: number;
-    titles: string[]
+    modelTitles: string[],
+    modificationTitles: string[]
 }
 
 export type NotifySettings = {
