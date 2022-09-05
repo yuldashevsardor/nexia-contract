@@ -72,13 +72,18 @@ export class Scrapper {
             `Эй йоу, просыпайся блат, я нашел тут кое что!!! И это ${model.name}`,
             `<code>${modelAsString.substring(0, 4000)}</code>`
         ];
-        const atModification = this.searchModification(model);
 
-        if (atModification) {
-            this.logger.info("!!!FOUND MODIFICATION!!!");
+        try {
+            const atModification = this.searchModification(model);
 
-            messages.push('АААААААААААА!!!! НАШЕЛ АВТОМАААТ!!!');
-            messages.push(`<code>${atModification.substring(0, 4000)}</code>`);
+            if (atModification) {
+                this.logger.info("!!!FOUND MODIFICATION!!!");
+
+                messages.push('АААААААААААА!!!! НАШЕЛ АВТОМАААТ!!!');
+                messages.push(`<code>${JSON.stringify(atModification).substring(0, 4000)}</code>`);
+            }
+        } catch (error) {
+            this.logger.critical("error on handle modification", error);
         }
 
         for (const chatId of this.notifySettings.chatIds) {
